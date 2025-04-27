@@ -9,23 +9,27 @@ interface FTable {
   tableName: string;
   headers: Header[];
   rows: any[];
-  onEdit?: (item: any) => void;
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
 }
 
-const RenderActionBtn = (headers: Header[], row: any, onEdit?: (item: any) => void) => {
+const RenderActionBtn = (
+  headers: Header[],
+  onEdit?: () => void
+) => {
   const keys = headers.map(header => header.name)
   if (!keys.includes('action')) return null
 
   return (
     <TableCell>
-      <EditIcon color={'success'} onClick={() => onEdit?.(row)} style={{ cursor: 'pointer' }} />
-      <DeleteOutlineIcon color={'error'} style={{ cursor: 'pointer' }} />
+      <EditIcon color={'success'} onClick={onEdit} style={{ cursor: 'pointer' }} />
+      <DeleteOutlineIcon color={'error'} onClick={onDelete} style={{ cursor: 'pointer' }} />
     </TableCell>
 
   )
 }
 
-export default ({tableName, headers, rows, onEdit}: FTable) => {
+export default ({tableName, headers, rows, onEdit, onDelete}: FTable) => {
   return (
     <>
       <h2>{tableName}</h2>
@@ -55,7 +59,7 @@ export default ({tableName, headers, rows, onEdit}: FTable) => {
                       })
                     }
                     {
-                      RenderActionBtn(headers, row, onEdit)
+                      RenderActionBtn(headers, () => onEdit(), onDelete)
                     }
                   </TableRow>
                 )
