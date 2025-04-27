@@ -22,14 +22,14 @@ const RenderActionBtn = (
 
   return (
     <TableCell>
-      <EditIcon color={'success'} onClick={onEdit} style={{ cursor: 'pointer' }} />
+      <EditIcon color={'success'} onClick={onUpdate} style={{ cursor: 'pointer' }} />
       <DeleteOutlineIcon color={'error'} onClick={onDelete} style={{ cursor: 'pointer' }} />
     </TableCell>
 
   )
 }
 
-export default ({tableName, headers, rows, onEdit, onDelete}: FTable) => {
+export default ({tableName, headers, rows, onUpdate, onDelete}: FTable) => {
   return (
     <>
       <h2>{tableName}</h2>
