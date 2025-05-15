@@ -1,0 +1,84 @@
+.f-editable-table
+  width: 100%
+  border-spacing: 0
+  position: relative
+  thead tr
+    background-color: #f5f5f5
+    height: 36px
+
+    th
+      font-size: 0.9em
+      color: rgba(0, 0, 0, 0.54)
+      background-color: #f5f5f5
+      text-align: center
+      border-top: 1px solid rgba(0, 0, 0, 0.12)
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12)
+      z-index: 1
+      position: relative
+
+  .stickyHeader
+    position: sticky
+    top: 230px
+    z-index: 1
+
+  .isFixedHeaderSaleScreen
+    position: sticky
+    top: 168px
+    z-index: 1
+
+  @-moz-document url-prefix()
+    .stickyHeader
+      position: sticky
+      top: 183px
+      z-index: 1
+    .isFixedHeaderSaleScreen
+      position: sticky
+      top: 168px
+      z-index: 1
+
+  thead tr th, tbody tr td
+    border-left: 1px solid rgba(0, 0, 0, 0.12)
+
+  tbody tr
+    height: 36px
+
+    &.dummy-row
+      height: 8px
+
+      td
+        border-bottom: none
+
+    &:hover td
+      background-color: rgba(0, 0, 0, 0.02)
+
+    td
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12)
+
+    td.total-
+      &quantity, &box, &stem, &price, &amount
+        text-align: right
+        padding: 0 4px 0 0
+
+    td.summary
+      background-color: #f5f5f5
+
+// Cell-cursor
+.cursor
+  position: absolute
+  border: 2px solid #8bc34a
+  top: 0
+  left: 0
+  pointer-events: none
+
+.cell-input
+  position: absolute
+  top: 0
+  left: 0
+  opacity: 0
+  pointer-events: none
+  background-color: #fff
+  will-change: opacity, top, left, width
+
+  &.editing
+    opacity: 1
+    pointer-events: initial
