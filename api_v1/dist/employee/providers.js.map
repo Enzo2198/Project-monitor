@@ -1,0 +1,1 @@
+{"version":3,"file":"providers.js","sourceRoot":"","sources":["../../src/employee/providers.ts"],"names":[],"mappings":";;;AACA,qCAA0C;AAE7B,QAAA,iBAAiB,GAAG;IAC/B;QACE,OAAO,EAAE,qBAAqB;QAC9B,UAAU,EAAE,CAAC,UAAsB,EAAE,EAAE,CAAC,UAAU,CAAC,aAAa,CAAC,uBAAc,CAAC;QAChF,MAAM,EAAE,CAAC,aAAa,CAAC;KACxB;CACF,CAAC"}
