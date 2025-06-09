@@ -1,32 +1,23 @@
 // import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import Product from './pages/Product'
-import Employee from './pages/Employee'
-// import App from './App.tsx'
+import router from "./router"
+import store, {getProducts, getCustomers, getColors} from './store'
+import {Provider} from "react-redux";
 
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router";
+import {RouterProvider} from "react-router";
 
-const router = createBrowserRouter([
-    {
-        path: "/hello",
-        element: <div>Hello World</div>,
-    },
-    {
-        path: "/product",
-        element: <Product/>,
-    },
-    {
-        path: "/employee",
-        element: <Employee/>,
-    },
-]);
 
 const root = document.getElementById("root");
 
+store.dispatch(getProducts())
+store.dispatch(getCustomers())
+store.dispatch(getColors())
+
 createRoot(root!).render(
-    <RouterProvider router={router} />
+  <>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </>
 )

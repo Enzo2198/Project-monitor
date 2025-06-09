@@ -1,61 +1,102 @@
-import { useState } from 'react';
-import {EmployeeDialog, FTable} from '../../components'
-import {Header, Employee} from '../../utils'
-import {Button} from "@mui/material";
+import {useEffect, useState} from 'react';
+import {EmployeeDialog, FHeader, FTable, SearchBar,} from '../../components'
+import {Header, Employee, postMethod, getMethod, putMethod} from '../../utils'
+import {Box} from "@mui/material"
+
+const headers: Header[] = [
+  {name: 'id', text: 'ID'},
+  {name: 'name', text: 'Ten'},
+  {name: 'age', text: 'Tuoi'},
+  {name: 'address', text: 'Dia Chi'},
+  {name: 'salary', text: 'Luong'},
+  {name: 'position', text: 'Vi tri'},
+  {name: 'status', text: 'Status'},
+  {name: 'action', text: ''}
+]
 
 export default () => {
-  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
+  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false)
   const [curEmployee, setCurEmployee] = useState<Employee>({
-    id: null,
+    id: 0,
     name: '',
-    age: '',
+    age: 0,
+    salary: 0,
     address: '',
+    position: '',
+    status: ''
   })
 
-  const headers: Header[] = [
-    {name: 'id', text: 'ID'},
-    {name: 'name', text: 'Ten'},
-    {name: 'age', text: 'Tuoi'},
-    {name: 'address', text: 'Dia Chi'},
-    {name: 'action', text: ''},
-  ]
-
-  const [employees, setEmployee] = useState<Employee[]>([
-    {id: 1, name: 'Dung', age: 20, address: 'Thanh Oai - Ha Noi'},
-    {id: 2, name: 'Trung', age: 22, address: 'Quoc Oai - Ha Noi'},
-    {id: 3, name: 'Son', age: 30, address: 'Thanh Oai 2 - Ha Noi'},
-  ])
+  const [employees, setEmployees] = useState<Employee[]>([])
 
   const onAdd = () => {
-    setIsOpenDialog(true);
+    setIsOpenDialog(true)
   }
 
-  const onEdit = (id: number) => {
-    setIsOpenDialog(true);
+  const onUpdate = (id: number) => {
+    // @ts-ignore
+    setCurEmployee({...employees.find(e => e.id === id)})
+    setIsOpenDialog(true)
   }
 
-  const onSave = () => {
-    setEmployee([...employees, curEmployee])
-    setIsOpenDialog(false);
+  const onSave = async () => {
+    // setEmployees([...employees, curEmployee])
+    setIsOpenDialog(false)
+    // todo: call api and save
+    console.log("curEmployee", curEmployee)
+
+    if (curEmployee.id) {
+      const newEmployee: Employee = await putMethod(`/employee/${curEmployee.id}`, toBody())
+      const updateEmployeeIndex = employees.findIndex(
+        (e: Employee) => Number(e.id) === Number(curEmployee.id)
+      )
+      employees[updateEmployeeIndex] = newEmployee
+      console.log(employees, updateEmployeeIndex)
+      setEmployees([...employees])
+    }
+    else {
+      const newEmployee: Employee = await postMethod('/employee', toBody())
+      setEmployees([...employees, newEmployee])
+    }
+    // update employees variable
+    // setEmployees([...employees, newEmployee])
   }
+
+  const toBody = () => {
+    return {
+      ...curEmployee,
+      age: Number(curEmployee.age),
+      salary: Number(curEmployee.salary)
+    }
+  }
+
+  const onMounted = async () => {
+    const employeesData: Employee[] = await getMethod('/employee')
+    setEmployees(employeesData)
+  }
+
+  useEffect(() => {
+    onMounted()
+  }, [])
 
   return (
     <>
-      <h1>Employee</h1>
-      <Button variant="outlined" onClick={onAdd}>Add</Button>
-      <FTable
-        tableName={'employee hihi'}
-        headers={headers}
-        rows={employees}
-        onEdit={onEdit}
-      />
-      <EmployeeDialog
-        employee={curEmployee}
-        setEmployee={setCurEmployee}
-        onSave={onSave}
-        isOpen={isOpenDialog}
-        onClose={() => setIsOpenDialog(false)}
-      />
+      <FHeader title={'Employees'}/>
+      <Box className={'container'}>
+        <SearchBar onAdd={onAdd}/>
+
+        <FTable
+          headers={headers}
+          rows={employees}
+          onUpdate={onUpdate}
+        />
+        <EmployeeDialog
+          employee={curEmployee}
+          setEmployee={setCurEmployee}
+          onSave={onSave}
+          isOpen={isOpenDialog}
+          onClose={() => setIsOpenDialog(false)}
+        />
+      </Box>
     </>
   )
 }

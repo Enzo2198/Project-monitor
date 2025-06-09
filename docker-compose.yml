@@ -1,10 +1,38 @@
 services:
   web:
-    container_name: Project-web
-    image: node:22.9.0
+    container_name: f8-k13-final-project-web
+    image: node:20.10.0
     working_dir: /app/web
+    env_file:
+      - .env
     volumes:
       - './web:/app/web'
     ports:
-      - '3000:3000'
+      - '4000:4000'
     command: ['npm', 'run', 'dev']
+
+  api:
+    container_name: f8-k13-final-project-api
+    image: node:20.10.0
+    working_dir: /app/api
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - './api_v1:/app/api'
+    ports:
+      - '3000:3000'
+    command: [ 'npm', 'run', 'start:dev' ]
+
+  db:
+    container_name: f8-k13-final-project-db
+    image: postgres:16
+    ports:
+      - "5000:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=default
+    volumes:
+      - ./db:/var/lib/postgresql/data
