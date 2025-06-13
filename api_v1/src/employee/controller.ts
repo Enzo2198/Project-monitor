@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put} from "@ne
 import {EmployeeService} from "./service";
 import {CreateEmployeeDto, UpdateEmployeeDto} from "./dto";
 
-@Controller('employee')
+@Controller('employees')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 

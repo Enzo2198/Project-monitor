@@ -15,9 +15,36 @@ const class_validator_1 = require("class-validator");
 const dto_1 = require("../orderDetail/dto");
 const class_transformer_1 = require("class-transformer");
 class OrderDto {
+    customerId;
+    deliveryAddress;
     employeeId;
     comment;
 }
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: 'integer',
+    }),
+    (0, class_validator_1.IsNumber)({
+        allowNaN: false,
+        allowInfinity: false
+    }, {
+        message: 'customerId must be number'
+    }),
+    (0, class_validator_1.IsNotEmpty)({
+        message: 'customerId should not be null'
+    }),
+    __metadata("design:type", Number)
+], OrderDto.prototype, "customerId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: 'string' }),
+    (0, class_validator_1.IsString)({
+        message: 'deliveryAddress must be string'
+    }),
+    (0, class_validator_1.IsNotEmpty)({
+        message: 'deliveryAddress should not be null'
+    }),
+    __metadata("design:type", Number)
+], OrderDto.prototype, "deliveryAddress", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: 'integer',

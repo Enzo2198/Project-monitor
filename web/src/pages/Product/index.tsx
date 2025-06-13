@@ -3,15 +3,15 @@ import {Header, Product} from '../../utils'
 import {Box} from "@mui/material";
 import {useState, useCallback} from "react";
 import {useSelector} from "react-redux";
-import store, {createProduct, deleteProduct, editProduct} from "../../store";
+import store, {RootState, updateProduct, createProduct} from "../../store";
 
 const headers: Header[] = [
   {name: 'id', text: 'ID'},
   {name: 'code', text: 'Code'},
   {name: 'name', text: 'Ten'},
-  {name: 'shortName', text: 'Ten Ngan'},
+  {name: 'shortName', text: 'Ten Ngan'}, // bang
   {name: 'description', text: 'Mo Ta'},
-  {name: 'color', text: 'mau', displayProperty: 'name'},
+  {name: 'color', text: 'mau', displayProperty: 'name'}, // {id, name}
   {name: 'action', text: ''}
 ]
 
@@ -27,20 +27,10 @@ export default () => {
     color: null
   })
 
-  const {isLoading, data: products} = useSelector(state => state.products)
-  // @ts-ignore
-  // const [colors, setColors] = useState<Color[]>([])
-  // const {isLoading, data: colors} = useSelector(state => state.customers)
+  const {data: products} = useSelector((state: RootState) => state.products)
+  // const {data: colors} = useSelector(state => state.products)
 
   const onAdd = () => {
-    setCurProduct({
-      id: 0,
-      code: '',
-      name: '',
-      shortName: '',
-      description: '',
-      color: null
-    });
     setIsOpenDialog(true)
   }
 
@@ -51,24 +41,13 @@ export default () => {
   }, [products])
 
   const onSave = async () => {
+    console.log(curProduct)
     setIsOpenDialog(false)
 
-    if (curProduct.id) {
-      // @ts-ignore
-      store.dispatch(editProduct({
-        ...toBody(),
-        id: curProduct.id
-      }))
-    }
-    else {
-      // @ts-ignore
-      store.dispatch(createProduct(toBody()))
-    }
-  }
-
-  const onDelete = (id: number) => {
     // @ts-ignore
-    store.dispatch(deleteProduct(id))
+    if (curProduct.id) store.dispatch(updateProduct({...toBody(), id: curProduct.id}))
+    // @ts-ignore
+    else store.dispatch(createProduct(toBody()))
   }
 
   const toBody = () => {
@@ -91,7 +70,6 @@ export default () => {
           headers={headers}
           rows={products}
           onUpdate={onUpdate}
-          onDelete={onDelete}
         />
         <ProductDialog
           product={curProduct}

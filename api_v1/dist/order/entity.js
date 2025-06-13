@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const entity_1 = require("../base/entity");
 let OrderEntity = class OrderEntity extends entity_1.BaseEntity {
     employeeId;
+    customerId;
     totalAmount;
     deliveryAddress;
     paymentStatus;
@@ -26,6 +27,12 @@ __decorate([
     }),
     __metadata("design:type", Number)
 ], OrderEntity.prototype, "employeeId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'customer_id',
+    }),
+    __metadata("design:type", Number)
+], OrderEntity.prototype, "customerId", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         name: 'total_amount'

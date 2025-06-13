@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import productsReducer from './products'
 import customersReducer from './customers'
 import colorsReducer from './colors'
+import employeesReducer from './employees'
 
 const store = configureStore({
   reducer: {
     products: productsReducer,
     customers: customersReducer,
-    colors: colorsReducer
+    colors: colorsReducer,
+    employees: employeesReducer
   }
 })
 
@@ -20,3 +22,6 @@ export * from './products'
 export * from './customers'
 // @ts-ignore
 export * from './colors'
+// @ts-ignore
+export * from './employees'
+export type RootState = ReturnType<typeof store.getState>

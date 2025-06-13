@@ -45,6 +45,14 @@ export class OrderService extends BaseService {
     
         select
           "order".id,
+          jsonb_build_object(
+            'id', customer.id,
+            'name', customer.name
+          ) as customer,
+          jsonb_build_object(
+                  'id', employee.id,
+                  'name', employee.name
+          ) as employee,
           "order".delivery_address,
           "order".comment,
           json_agg(
@@ -58,20 +66,68 @@ export class OrderService extends BaseService {
         
         from "order"
         join order_detail_tmp on "order".id = order_detail_tmp.order_id
-        group by "order".id
+        join customer on customer.id = "order".customer_id
+        join employee on employee.id = "order".employee_id
+        group by "order".id, customer.id, employee.id
     `)
 
     return dataSource
   }
 
-  // getOrder() {
-  //
-  // }
+  async getOne(id: number) {
+    const dataSource = await this.dataSource.query(`
+      with
+        order_detail_tmp as (
+          select order_detail.id,
+                 order_detail.order_id,
+                 order_detail.price,
+                 order_detail.amount,
+                 json_build_object(
+                      'id', product.id,
+                      'name', product.name
+                 ) as product
+          from order_detail
+          join product on product.id = order_detail.product_id
+          where order_detail.active
+        )
+    
+        select
+          "order".id,
+          jsonb_build_object(
+            'id', customer.id,
+            'name', customer.name
+          ) as customer,
+          jsonb_build_object(
+                  'id', employee.id,
+                  'name', employee.name
+          ) as employee,
+          "order".delivery_address,
+          "order".comment,
+          json_agg(
+            json_build_object(
+              'id', order_detail_tmp.id,
+              'product', order_detail_tmp.product,
+              'price', order_detail_tmp.price,
+              'amount', order_detail_tmp.amount
+            )
+          ) as details
+        
+        from "order"
+        join order_detail_tmp on "order".id = order_detail_tmp.order_id
+        join customer on customer.id = "order".customer_id
+        join employee on employee.id = "order".employee_id
+        where "order".id = ${id}
+        group by "order".id, customer.id, employee.id
+    `)
+    return dataSource[0]
+  }
 
   async create(orderDto: CreateOrderDto): Promise<any> {
     console.log(orderDto)
     const order = toCamelCase(await super.create({
       employeeId: orderDto.employeeId,
+      customerId: orderDto.customerId,
+      deliveryAddress: orderDto.deliveryAddress,
       comment: orderDto.comment
     }))
     console.log(order)

@@ -9,6 +9,11 @@ export class OrderEntity extends BaseEntity {
   employeeId: number
 
   @Column({
+    name: 'customer_id',
+  })
+  customerId: number
+
+  @Column({
     name: 'total_amount'
   })
   totalAmount: number

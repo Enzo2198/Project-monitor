@@ -9,25 +9,31 @@ interface FTable {
   headers: Header[]
   rows: any[]
   onUpdate?: (id: number) => void
-  onDelete?: (id: number) => void
   width?: number
 }
 
 const RenderActionBtn = (
-  id: number,
-  onUpdate?: (id: number) => void,
-  onDelete?: (id: number) => void
+  headers: Header[],
+  rowId: number,
+  onUpdate: () => void
 ) => {
+  const keys = headers.map(header => header.name)
+  if (!keys.includes('action')) return
+
   return (
-    <TableCell key={`action-${id}`}>
-      <EditIcon color="success" onClick={() => onUpdate?.(id)} style={{cursor: 'pointer'}}/>
-      <DeleteOutlineIcon color="error" onClick={() => onDelete?.(id)} style={{cursor: 'pointer', marginLeft: 8}}/>
+    <TableCell size={"small"} key={`action-${rowId}`}>
+      <EditIcon color={'success'} onClick={onUpdate}/>
+      <DeleteOutlineIcon color={'error'} />
     </TableCell>
   )
 }
 
 
-function FTableComponent({headers, rows, onUpdate, onDelete, width}: FTable) {
+function FTableComponent({headers, rows, onUpdate, width}: FTable) {
+  console.log(1234567)
+
+  // const rows = []
+  // const onUpdate = () => {}
 
   return (
     <>
@@ -44,26 +50,36 @@ function FTableComponent({headers, rows, onUpdate, onDelete, width}: FTable) {
           </TableHead>
 
           <TableBody>
-            {rows.map((row: any) => (
-              <TableRow key={`employee-${row.id}`}>
-                {headers.map((header: Header) => {
-                  if (header.name === 'action') {
-                    return RenderActionBtn(row.id, onUpdate, onDelete);
-                  }
+            {
+              rows?.map((row: any) => {
+                // @ts-ignore
+                return (
+                  <TableRow key={row.id}>
+                    {
+                      headers.map((header: Header) => {
+                        if (header.name === 'action') {
+                          // @ts-ignore
+                          return RenderActionBtn(headers, row.id, () => onUpdate(row.id))
+                        }
 
-                  const rowKey: string = header.name;
-                  return (
-                    <TableCell size="small" key={`${rowKey}-${row.id}`}>
-                      {row[rowKey]
-                        ? header?.displayProperty
-                          ? row[rowKey][header.displayProperty]
-                          : row[rowKey]
-                        : ''}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+                        const rowKey: string = header.name
+                        // const header = headers.find(h => h.name === rowKey)
+                        return (
+                          <TableCell size={"small"} key={`${rowKey}-${row.id}`}>
+                            {
+                              row[rowKey]
+                                ? header?.displayProperty ? row[rowKey][header.displayProperty] : row[rowKey]
+                                : ''
+                            }
+                          </TableCell>
+                        )
+                      })
+                    }
+                  </TableRow>
+                )
+              })
+            }
+
           </TableBody>
         </Table>
       </TableContainer>

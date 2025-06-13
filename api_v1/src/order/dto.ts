@@ -6,6 +6,29 @@ import {Type} from "class-transformer";
 class OrderDto {
   @ApiProperty({
     type: 'integer',
+  })
+  @IsNumber({
+    allowNaN: false,
+    allowInfinity: false
+  }, {
+    message: 'customerId must be number'
+  })
+  @IsNotEmpty({
+    message: 'customerId should not be null'
+  })
+  customerId: number
+
+  @ApiProperty({type: 'string'})
+  @IsString({
+    message: 'deliveryAddress must be string'
+  })
+  @IsNotEmpty({
+    message: 'deliveryAddress should not be null'
+  })
+  deliveryAddress: number
+
+  @ApiProperty({
+    type: 'integer',
     nullable: false
   })
   @IsNumber({

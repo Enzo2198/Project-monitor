@@ -1,7 +1,9 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {EmployeeDialog, FHeader, FTable, SearchBar,} from '../../components'
-import {Header, Employee, postMethod, getMethod, putMethod} from '../../utils'
+import {Header, Employee} from '../../utils'
 import {Box} from "@mui/material"
+import { RootState } from '../../store';
+import { useSelector } from 'react-redux';
 
 const headers: Header[] = [
   {name: 'id', text: 'ID'},
@@ -14,21 +16,23 @@ const headers: Header[] = [
   {name: 'action', text: ''}
 ]
 
+const defaultEmployee = {
+  id: 0,
+  name: '',
+  age: '',
+  salary: '',
+  address: '',
+  position: '',
+  status: ''
+}
+
 export default () => {
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false)
-  const [curEmployee, setCurEmployee] = useState<Employee>({
-    id: 0,
-    name: '',
-    age: 0,
-    salary: 0,
-    address: '',
-    position: '',
-    status: ''
-  })
+  const [curEmployee, setCurEmployee] = useState<Employee>({...defaultEmployee})
 
-  const [employees, setEmployees] = useState<Employee[]>([])
-
+  const {data: employees} = useSelector((state: RootState) => state.employees)
   const onAdd = () => {
+    setCurEmployee({...defaultEmployee})
     setIsOpenDialog(true)
   }
 
@@ -39,26 +43,12 @@ export default () => {
   }
 
   const onSave = async () => {
-    // setEmployees([...employees, curEmployee])
     setIsOpenDialog(false)
-    // todo: call api and save
-    console.log("curEmployee", curEmployee)
 
-    if (curEmployee.id) {
-      const newEmployee: Employee = await putMethod(`/employee/${curEmployee.id}`, toBody())
-      const updateEmployeeIndex = employees.findIndex(
-        (e: Employee) => Number(e.id) === Number(curEmployee.id)
-      )
-      employees[updateEmployeeIndex] = newEmployee
-      console.log(employees, updateEmployeeIndex)
-      setEmployees([...employees])
-    }
-    else {
-      const newEmployee: Employee = await postMethod('/employee', toBody())
-      setEmployees([...employees, newEmployee])
-    }
-    // update employees variable
-    // setEmployees([...employees, newEmployee])
+    // @ts-ignore
+    if (curEmployee.id) store.dispatch(updateEmployee({...toBody(), id: curEmployee.id}))
+    // @ts-ignore
+    else store.dispatch(createEmployee(toBody()))
   }
 
   const toBody = () => {
@@ -68,15 +58,6 @@ export default () => {
       salary: Number(curEmployee.salary)
     }
   }
-
-  const onMounted = async () => {
-    const employeesData: Employee[] = await getMethod('/employee')
-    setEmployees(employeesData)
-  }
-
-  useEffect(() => {
-    onMounted()
-  }, [])
 
   return (
     <>

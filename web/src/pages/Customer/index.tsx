@@ -3,7 +3,7 @@ import {Customer, Header} from '../../utils'
 import {Box} from "@mui/material";
 import {useState, useCallback} from "react";
 import {useSelector} from "react-redux";
-import store, {createCustomer, editCustomer, deleteCustomer} from '../../store'
+import store, {createCustomer, RootState, updateCustomer} from '../../store'
 
 const headers: Header[] = [
   {name: 'id', text: 'ID'},
@@ -14,28 +14,21 @@ const headers: Header[] = [
   {name: 'action', text: ''}
 ]
 
+const defaultCustomer = {
+  id: 0,
+  name: '',
+  companyName: '',
+  address: '',
+  description: ''
+}
 
 export default () => {
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false)
-  const [curCustomer, setCurCustomer] = useState<Customer>({
-    id: 0,
-    name: '',
-    companyName: '',
-    address: '',
-    description: ''
-  })
-
-  const {isLoading, data: customers} = useSelector(state => state.customers)
-  // const [customers, setCustomers] = useState<Customer[]>([])
+  const [curCustomer, setCurCustomer] = useState<Customer>({...defaultCustomer})
+  const {data: customers} = useSelector((state: RootState) => state.customers)
 
   const onAdd = () => {
-    setCurCustomer({
-      id: 0,
-      name: '',
-      companyName: '',
-      address: '',
-      description: ''
-    });
+    setCurCustomer({...defaultCustomer})
     setIsOpenDialog(true)
   }
 
@@ -48,24 +41,14 @@ export default () => {
   const onSave = async () => {
     setIsOpenDialog(false)
 
-    if (curCustomer.id) {
-      // @ts-ignore
-      store.dispatch(editCustomer(toBody()))
-    }
-    else {
-      // @ts-ignore
-      store.dispatch(createCustomer(toBody()))
-    }
-  }
-
-  const onDelete = (id: number) => {
     // @ts-ignore
-    store.dispatch(deleteCustomer(id))
+    if (curCustomer.id) store.dispatch(updateCustomer({...toBody(), id: curCustomer.id}))
+    // @ts-ignore
+    else store.dispatch(createCustomer(toBody()))
   }
 
   const toBody = () => {
     return {
-      id: curCustomer.id,
       name: curCustomer.name,
       companyName: curCustomer.companyName,
       address: curCustomer.address,
@@ -83,7 +66,6 @@ export default () => {
           headers={headers}
           rows={customers}
           onUpdate={onUpdate}
-          onDelete={onDelete}
         />
         <CustomerDialog
           customer={curCustomer}

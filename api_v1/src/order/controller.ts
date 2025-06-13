@@ -11,6 +11,11 @@ export class OrderController {
     return this.orderService.getOrders();
   }
 
+  @Get('/:id')
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.orderService.getOne(id);
+  }
+
   @Post('')
   create(@Body() createDto: CreateOrderDto) {
     return this.orderService.create(createDto);

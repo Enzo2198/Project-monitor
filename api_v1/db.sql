@@ -57,6 +57,7 @@ CREATE TABLE "order"
 (
     id  bigserial NOT NULL,
     employee_id bigint,
+    customer_id bigint,
     total_amount int,
     delivery_address text,
     payment_status text,

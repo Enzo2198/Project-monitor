@@ -1,36 +1,25 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {getMethod, postMethod, putMethod, deleteMethod, Customer} from "../../utils";
+import {Customer, getMethod, postMethod, putMethod} from "../../utils";
 
-interface CustomersState {
-  isLoading: boolean;
-  data: Customer[];
-}
 
-const initialState: CustomersState = {
-  isLoading: false,
-  data: []
-};
-
-export const getCustomers = createAsyncThunk<Customer[]>('customers/getCustomers', async () => {
+export const getCustomers = createAsyncThunk('customers/getCustomers', async () => {
   return await getMethod('/customers/')
 })
 
-export const createCustomer = createAsyncThunk('customers/createCustomer', async (customer) => {
+export const createCustomer = createAsyncThunk('customers/createCustomer', async (customer: Customer) => {
   return await postMethod('/customers/', customer)
 })
 
-export const editCustomer = createAsyncThunk<Customer, Customer>('customers/editCustomer', async (customer) => {
+export const updateCustomer = createAsyncThunk('customers/update', async (customer: Customer) => {
   return await putMethod(`/customers/${customer.id}`, customer)
-})
-
-export const deleteCustomer = createAsyncThunk('customers/deleteCustomer', async (id) => {
-  await deleteMethod(`/customers/${id}`)
-  return id;
 })
 
 const customersSlice = createSlice({
   name: 'customers',
-  initialState,
+  initialState: {
+    isLoading: false,
+    data: []
+  },
   reducers: {},
   extraReducers: builder => {
     builder.addCase(getCustomers.pending, (state) => {
@@ -45,15 +34,14 @@ const customersSlice = createSlice({
       // @ts-ignore
       state.data = [...state.data, action.payload]
     })
-    builder.addCase(editCustomer.fulfilled, (state, action) => {
-      const index = state.data.findIndex(c => c.id === action.payload.id);
-      if (index !== -1) {
-        state.data[index] = action.payload;
-      }
-    })
-    builder.addCase(deleteCustomer.fulfilled, (state, action) => {
+    builder.addCase(updateCustomer.fulfilled, (state, action) => {
       state.isLoading = false
-      state.data = state.data.filter(c => c.id !== action.payload);
+
+      const updateIndex = state.data.findIndex(
+        (e: any) => Number(e.id) === Number(action.payload.id)
+      )
+      // @ts-ignore
+      state.data[updateIndex] = action.payload
     })
   }
 })

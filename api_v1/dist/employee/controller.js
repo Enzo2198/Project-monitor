@@ -66,7 +66,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], EmployeeController.prototype, "delete", null);
 exports.EmployeeController = EmployeeController = __decorate([
-    (0, common_1.Controller)('employee'),
+    (0, common_1.Controller)('employees'),
     __metadata("design:paramtypes", [service_1.EmployeeService])
 ], EmployeeController);
 //# sourceMappingURL=controller.js.map

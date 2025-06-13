@@ -12,9 +12,9 @@ interface Master {
 export interface Color extends Master {}
 
 export interface Employee extends Master{
-  age: number | null
+  age: number | null | string
   address: string | null
-  salary: number | null
+  salary: number | null | string
   position: string | null
   status: string | null
 }

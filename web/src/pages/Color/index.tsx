@@ -1,10 +1,9 @@
 import {FTable, FHeader, ColorDialog, SearchBar} from '../../components'
 import {Color, Header} from '../../utils'
 import {Box} from "@mui/material";
-import {useState, useEffect, useCallback} from "react";
-import {getMethod, postMethod, putMethod} from "../../utils/api.ts";
+import {useState, useCallback} from "react";
 import {useSelector} from "react-redux";
-import store, {createColor, createCustomer, deleteColor, deleteCustomer, editColor} from "../../store";
+import store, {RootState, createColor, updateColor} from "../../store";
 
 const headers: Header[] = [
   {name: 'id', text: 'ID'},
@@ -12,21 +11,19 @@ const headers: Header[] = [
   {name: 'action', text: ''}
 ]
 
+const defaultColor = {
+  id: 0,
+  name: ''
+}
 
 export default () => {
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false)
-  const [curColor, setCurColor] = useState<Color>({
-    id: 0,
-    name: ''
-  })
-
-  const {isLoading, data: colors} = useSelector(state => state.colors)
+  const [curColor, setCurColor] = useState<Color>({...defaultColor})
+  const {data: colors} = useSelector((state: RootState) => state.colors)
+  // const [colors, setColors] = useState<Color[]>([])
 
   const onAdd = () => {
-    setCurColor({
-      id: 0,
-      name: ''
-    })
+    setCurColor({...defaultColor})
     setIsOpenDialog(true)
   }
 
@@ -39,24 +36,14 @@ export default () => {
   const onSave = async () => {
     setIsOpenDialog(false)
 
-    if (curColor.id) {
-      // @ts-ignore
-      store.dispatch(editColor(toBody()))
-    }
-    else {
-      // @ts-ignore
-      store.dispatch(createColor(toBody()))
-    }
-  }
-
-  const onDelete = (id: number) => {
     // @ts-ignore
-    store.dispatch(deleteColor(id))
+    if (curColor.id) store.dispatch(updateColor({...toBody(), id: curColor.id}))
+    // @ts-ignore
+    else store.dispatch(createColor(toBody()))
   }
 
   const toBody = () => {
     return {
-      id: curColor.id,
       name: curColor.name
     }
   }
@@ -71,7 +58,6 @@ export default () => {
           headers={headers}
           rows={colors}
           onUpdate={onUpdate}
-          onDelete={onDelete}
         />
         <ColorDialog
           color={curColor}

@@ -10,5 +10,6 @@ export declare class OrderService extends BaseService {
     columns: string[];
     constructor(orderRepository: Repository<OrderEntity>, orderDetailService: OrderDetailService, dataSource: DataSource);
     getOrders(): Promise<any>;
+    getOne(id: number): Promise<any>;
     create(orderDto: CreateOrderDto): Promise<any>;
 }
