@@ -56,6 +56,7 @@ DROP TABLE IF EXISTS "order" CASCADE;
 CREATE TABLE "order"
 (
     id  bigserial NOT NULL,
+    sale_date date,
     employee_id bigint,
     customer_id bigint,
     total_amount int,

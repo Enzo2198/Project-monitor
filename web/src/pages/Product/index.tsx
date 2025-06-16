@@ -9,9 +9,9 @@ const headers: Header[] = [
   {name: 'id', text: 'ID'},
   {name: 'code', text: 'Code'},
   {name: 'name', text: 'Ten'},
-  {name: 'shortName', text: 'Ten Ngan'}, // bang
+  {name: 'shortName', text: 'Ten Ngan'},
   {name: 'description', text: 'Mo Ta'},
-  {name: 'color', text: 'mau', displayProperty: 'name'}, // {id, name}
+  {name: 'color', text: 'mau', displayProperty: 'name'},
   {name: 'action', text: ''}
 ]
 
@@ -27,10 +27,20 @@ export default () => {
     color: null
   })
 
+  const defaultProduct = {
+    id: 0,
+    code: '',
+    name: '',
+    shortName: '',
+    description: '',
+    color: null
+  }
+
   const {data: products} = useSelector((state: RootState) => state.products)
   // const {data: colors} = useSelector(state => state.products)
 
   const onAdd = () => {
+    setCurProduct({...defaultProduct})
     setIsOpenDialog(true)
   }
 

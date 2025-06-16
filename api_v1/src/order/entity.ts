@@ -4,6 +4,12 @@ import { BaseEntity } from '../base/entity'
 @Entity('order')
 export class OrderEntity extends BaseEntity {
   @Column({
+    name: 'sale_date',
+    type: 'date'
+  })
+  saleDate: string
+
+  @Column({
     name: 'employee_id',
   })
   employeeId: number

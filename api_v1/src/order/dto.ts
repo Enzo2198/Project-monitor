@@ -1,5 +1,15 @@
 import {ApiBody, ApiProperty } from '@nestjs/swagger';
-import {IsArray, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, minLength, ValidateNested} from "class-validator";
+import {
+  IsArray,
+  IsIn,
+  IsISO8601,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  minLength,
+  ValidateNested
+} from "class-validator";
 import { CreateOrderDetailDto, UpdateOrderDetailDto } from "../orderDetail/dto";
 import {Type} from "class-transformer";
 
@@ -17,6 +27,14 @@ class OrderDto {
     message: 'customerId should not be null'
   })
   customerId: number
+
+  @ApiProperty({
+    type: 'string',
+    format: 'date',
+    example: '2024-02-12',
+  })
+  @IsISO8601()
+  saleDate: string
 
   @ApiProperty({type: 'string'})
   @IsString({

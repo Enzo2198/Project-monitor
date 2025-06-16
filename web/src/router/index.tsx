@@ -12,7 +12,7 @@ import ChatApp from '../pages/ChatApp'
 
 const router = createBrowserRouter([
   {
-    path: "/order",
+    path: "/orders",
     element: <Order/>,
   },
   {

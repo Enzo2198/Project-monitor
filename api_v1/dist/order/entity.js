@@ -13,6 +13,7 @@ exports.OrderEntity = void 0;
 const typeorm_1 = require("typeorm");
 const entity_1 = require("../base/entity");
 let OrderEntity = class OrderEntity extends entity_1.BaseEntity {
+    saleDate;
     employeeId;
     customerId;
     totalAmount;
@@ -21,6 +22,13 @@ let OrderEntity = class OrderEntity extends entity_1.BaseEntity {
     comment;
 };
 exports.OrderEntity = OrderEntity;
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'sale_date',
+        type: 'date'
+    }),
+    __metadata("design:type", String)
+], OrderEntity.prototype, "saleDate", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         name: 'employee_id',

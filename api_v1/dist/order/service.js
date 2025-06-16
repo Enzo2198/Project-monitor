@@ -22,7 +22,7 @@ let OrderService = class OrderService extends service_1.BaseService {
     orderRepository;
     orderDetailService;
     dataSource;
-    columns = ['id', 'employee_id', 'total_amount', 'delivery_address', 'payment_status', 'comment'];
+    columns = ['id', 'sale_date', 'employee_id', 'total_amount', 'delivery_address', 'payment_status', 'comment'];
     constructor(orderRepository, orderDetailService, dataSource) {
         super(orderRepository);
         this.orderRepository = orderRepository;
@@ -48,6 +48,7 @@ let OrderService = class OrderService extends service_1.BaseService {
     
         select
           "order".id,
+          to_char("order".sale_date, 'YYYY-MM-DD') as "saleDate",
           jsonb_build_object(
             'id', customer.id,
             'name', customer.name
@@ -56,7 +57,7 @@ let OrderService = class OrderService extends service_1.BaseService {
                   'id', employee.id,
                   'name', employee.name
           ) as employee,
-          "order".delivery_address,
+          "order".delivery_address as "deliveryAddress",
           "order".comment,
           json_agg(
             json_build_object(
@@ -94,6 +95,7 @@ let OrderService = class OrderService extends service_1.BaseService {
     
         select
           "order".id,
+          to_char("order".sale_date, 'YYYY-MM-DD') as "saleDate",
           jsonb_build_object(
             'id', customer.id,
             'name', customer.name
@@ -102,7 +104,7 @@ let OrderService = class OrderService extends service_1.BaseService {
                   'id', employee.id,
                   'name', employee.name
           ) as employee,
-          "order".delivery_address,
+          "order".delivery_address as "deliveryAddress",
           "order".comment,
           json_agg(
             json_build_object(
@@ -123,8 +125,8 @@ let OrderService = class OrderService extends service_1.BaseService {
         return dataSource[0];
     }
     async create(orderDto) {
-        console.log(orderDto);
         const order = (0, utils_1.toCamelCase)(await super.create({
+            saleDate: orderDto.saleDate,
             employeeId: orderDto.employeeId,
             customerId: orderDto.customerId,
             deliveryAddress: orderDto.deliveryAddress,

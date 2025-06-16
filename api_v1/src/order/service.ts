@@ -12,7 +12,7 @@ import {OrderDetailEntity} from "../orderDetail/entity";
 @Injectable()
 export class OrderService extends BaseService {
 
-  columns: string[] = ['id', 'employee_id', 'total_amount', 'delivery_address', 'payment_status', 'comment']
+  columns: string[] = ['id', 'sale_date', 'employee_id', 'total_amount', 'delivery_address', 'payment_status', 'comment']
 
   constructor(
     @Inject('ORDER_REPOSITORY')
@@ -45,6 +45,7 @@ export class OrderService extends BaseService {
     
         select
           "order".id,
+          to_char("order".sale_date, 'YYYY-MM-DD') as "saleDate",
           jsonb_build_object(
             'id', customer.id,
             'name', customer.name
@@ -53,7 +54,7 @@ export class OrderService extends BaseService {
                   'id', employee.id,
                   'name', employee.name
           ) as employee,
-          "order".delivery_address,
+          "order".delivery_address as "deliveryAddress",
           "order".comment,
           json_agg(
             json_build_object(
@@ -93,6 +94,7 @@ export class OrderService extends BaseService {
     
         select
           "order".id,
+          to_char("order".sale_date, 'YYYY-MM-DD') as "saleDate",
           jsonb_build_object(
             'id', customer.id,
             'name', customer.name
@@ -101,7 +103,7 @@ export class OrderService extends BaseService {
                   'id', employee.id,
                   'name', employee.name
           ) as employee,
-          "order".delivery_address,
+          "order".delivery_address as "deliveryAddress",
           "order".comment,
           json_agg(
             json_build_object(
@@ -123,15 +125,15 @@ export class OrderService extends BaseService {
   }
 
   async create(orderDto: CreateOrderDto): Promise<any> {
-    console.log(orderDto)
     const order = toCamelCase(await super.create({
+      saleDate: orderDto.saleDate,
       employeeId: orderDto.employeeId,
       customerId: orderDto.customerId,
       deliveryAddress: orderDto.deliveryAddress,
       comment: orderDto.comment
     }))
     console.log(order)
-    // insert order details
+    // insert orders details
     let orderDetails = orderDto.details.map((detail: CreateOrderDetailDto) => {
       return { ...detail, orderId: order.id }
     })

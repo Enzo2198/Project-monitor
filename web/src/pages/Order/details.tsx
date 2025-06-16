@@ -5,12 +5,44 @@ import dayjs from 'dayjs';
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Box from "@mui/material/Box";
-import {Customer, getMethod, Product, OrderDetail} from "../../utils";
+import {Customer, getMethod, Product, OrderDetail, Employee, postMethod} from "../../utils";
+import './index.sass'
+import {useSelector} from 'react-redux'
+import { RootState } from '../../store';
+import {useParams} from "react-router";
+
+const toBody = (order: any) => {
+  const orderDetails: OrderDetail[] = order.details
+  const details = orderDetails.map((detail: OrderDetail) => {
+    return {
+      productId: Number(detail.productId),
+      price: Number(detail.price),
+      quantity: Number(detail.quantity)
+    }
+  })
+
+  return {
+    id: order.id,
+    customerId: Number(order.customer?.id),
+    saleDate: order.saleDate,
+    deliveryAddress: order.deliveryAddress,
+    employeeId: Number(order.employee?.id),
+    comment: null,
+    details: details
+  }
+}
+
+const emptyDetail = { id: null, productId: '', price: '', quantity: '', amount: '' }
 
 export default function() {
-  const emptyDetail = { id: null, productsId: '', price: '', quantity: '', amount: '', isValid: true }
-  const [customers, setCustomers] = useState<Customer[]>([])
-  const [products, setProducts] = useState<Product[]>([])
+  // get current order from param
+  const params = useParams()
+  const orderId = Number(params.id)
+
+  // get products / customers / employees from store
+  const products: Product[] = useSelector((state: RootState) => state.products).data
+  const customers: Customer[] = useSelector((state: RootState) => state.customers).data
+  const employees: Employee[] = useSelector((state: RootState) => state.employees).data
 
   const [headers, setHeaders] = useState([
     { name: 'product', items: products, dropdown: true, width: '30%' },
@@ -23,6 +55,9 @@ export default function() {
   const [order, setOrder] = useState({
     id: null,
     customer: {
+      id: null, name: ''
+    },
+    employee: {
       id: null, name: ''
     },
     deliveryAddress: '',
@@ -39,31 +74,57 @@ export default function() {
   }
 
   const onMounted = async () => {
-    // get data from api
-    const [customerData, productData] = await Promise.all([
-      getMethod('/customers/'), getMethod('/products')
-    ])
-    setCustomers(customerData)
-    setProducts(productData)
+    // todo (optional) get order from api
+    if (orderId === 0) return
+    const orderData = await getMethod(`orders/${orderId}`)
 
-    const newHeaders = [...headers]
-    newHeaders[0].items = productData
-    setHeaders([...newHeaders])
+    const curOrder = {...orderData}
+    const details: OrderDetail[] = curOrder.details.map((detail: any) => {
+      return {
+        amount: detail.amount,
+        id: detail.id,
+        price: detail.price,
+        productId: detail.product?.id,
+        product: detail.product?.name,
+        quantity: detail.quantity
+      }
+    })
+    setOrder({...curOrder, details})
   }
 
-  const onSave = () => {
+  const onSave = async () => {
     console.log(order)
+    // create order
+    await postMethod('orders', toBody(order))
   }
 
-  const onInput = (value, rowIndex, columnIndex) => {
-    for (const detail of order.details) {
-      if (detail.quantity && detail.price) detail.amount = detail.quantity * detail.price
+  const onInput = (value: string, rowIndex: number, columnIndex: number) => {
+    // @ts-ignore
+    const details: OrderDetail[] = order.details
+    const detail = details[rowIndex]
+
+    // if current column this product col -> convert name to id
+    if (headers[columnIndex].name === 'product') {
+      // @ts-ignore
+      detail.productId = products.find((p: Product) => p.name === value).id
     }
+    if (detail.quantity && detail.price) detail.amount = detail.quantity * detail.price
   }
+
+  useEffect(() => {
+    console.log('order', order)
+  }, [order])
+
 
   useEffect(() => {
     onMounted()
   }, [])
+
+  useEffect(() => {
+    const newHeaders = [...headers]
+    newHeaders[0].items = products
+    setHeaders([...newHeaders])
+  }, [products])
 
   return (
     <>
@@ -72,31 +133,51 @@ export default function() {
         <h2 style={{padding: '10px'}}>New Order</h2>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <Autocomplete
+                fullWidth={true}
+                disablePortal
+                options={employees}
+                size={"small"}
+                getOptionLabel={(option: any) => option.name}
+                isOptionEqualToValue={(option: Employee, value) => option.id === value.id}
+                value={order.employee}
+                renderInput={
+                  (params) => <TextField {...params} key={order.employee?.id} label="Employee Name" />
+                }
+                onChange={(_event, newValue: Customer) => {
+                  setOrder({...order, employee: newValue})
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Autocomplete
                 fullWidth={true}
                 disablePortal
                 options={customers}
+                size={"small"}
+                value={order.customer}
                 getOptionLabel={(option: any) => option.name}
-                getOptionKey={(option: Customer) => option.id}
+                isOptionEqualToValue={(option: Customer, value) => option.id === value.id}
                 renderInput={
-                  (params) => <TextField {...params} label="Customer Name" value={order.customer?.name} />
+                  (params) => <TextField {...params} key={order.customer?.id} label="Customer Name" />
                 }
-                onChange={(event, newValue: Customer) => {
+                onChange={(_event, newValue: Customer) => {
                   setOrder({...order, customer: newValue, deliveryAddress: newValue?.address})
                 }}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <TextField
                 fullWidth
                 label="Address"
                 variant="outlined"
                 value={order.deliveryAddress}
                 onChange={e => setOrder({...order, deliveryAddress: e.target.value})}
+                size={"small"}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <DesktopDatePicker
                 sx={{width: '100%'}}
                 defaultValue={dayjs(order.saleDate)}

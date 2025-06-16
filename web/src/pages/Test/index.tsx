@@ -7,7 +7,7 @@ const columns = [
     name: 'assign_type',
     header: true,
     items: [
-      {id: 1, name: 'order', code: 1, search_str: 'order|1'},
+      {id: 1, name: 'order', code: 1, search_str: 'orders|1'},
       {id: 2, name: 'seri', code: 2, search_str: 'seri|2'},
       {id: 3, name: '依頼', code: 2, search_str: '依頼|3'},
       {id: 4, name: '定期', code: 2, search_str: '定期|4'},

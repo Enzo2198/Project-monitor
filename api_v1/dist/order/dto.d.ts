@@ -1,6 +1,7 @@
 import { CreateOrderDetailDto, UpdateOrderDetailDto } from "../orderDetail/dto";
 declare class OrderDto {
     customerId: number;
+    saleDate: string;
     deliveryAddress: number;
     employeeId: number;
     comment: string;

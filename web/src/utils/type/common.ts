@@ -1,3 +1,4 @@
+
 export interface Header {
   name: string
   text: string
@@ -33,9 +34,20 @@ export interface Customer extends Master {
 }
 
 export interface OrderDetail {
+  id: number
   productId: number,
   price: number,
   quantity: number
   amount: number,
   isValid: boolean
+}
+
+export interface Order{
+  id: number
+  saleDate: string | null
+  customer: Master
+  employee: Master
+  deliveryAddress: string | null
+  comment: string | null
+  details: OrderDetail[]
 }
